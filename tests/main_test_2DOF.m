@@ -2,9 +2,17 @@
 %  Phase 1 — Complete test script for 2-DOF serial arm FK + IK
 %  Run this BEFORE opening Simulink to confirm all algorithms work.
 %    1. Open MATLAB
-%    2. Set folder to where these .m files are (use "Browse for folder" button)
-%    3. Press F5 or click the green Run button
+%    2. Navigate to the project root folder
+%    3. Press F5 or click the green Run button on this file
 %    4. All sections run automatically. Check Command Window output.
+
+% Add paths to kinematics and visualization folders
+test_folder = fileparts(mfilename('fullpath'));
+project_root = fileparts(test_folder);
+kinematics_folder = fullfile(project_root, 'kinematics');
+visualization_folder = fullfile(project_root, 'visualization');
+addpath(kinematics_folder);
+addpath(visualization_folder);
 
 clear; clc; close all;
 fprintf('================================================\n');

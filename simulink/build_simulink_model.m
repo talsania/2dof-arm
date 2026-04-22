@@ -5,7 +5,12 @@
 %    2. Press F5 on this file
 %    3. Two Simulink windows open automatically
 %    4. In EACH window press Ctrl+T to run the simulation
-%    5. Then run verify_simulink.m to check results
+%    5. Then run tests/verify_simulink.m to check results
+
+% Ensure we're in the simulink folder and save models here
+simulink_folder = fileparts(mfilename('fullpath'));
+original_folder = pwd;
+cd(simulink_folder);
 
 % Shared code strings for IK and FK blocks
 
@@ -225,14 +230,17 @@ fprintf('  --> Press Ctrl+T in this Simulink window to run\n');
 fprintf('  --> XY Graph shows arm path (horizontal line)\n');
 fprintf('  --> Scope shows joint angles over time\n');
 
+% Return to original folder
+cd(original_folder);
+
 % Final message
 fprintf('\n================================================\n');
 fprintf(' BOTH MODELS BUILT\n\n');
-fprintf(' 1. arm_static.slx     Press Ctrl+T\n');
+fprintf(' 1. simulink/arm_static.slx     Press Ctrl+T\n');
 fprintf('    Look at Display_x = 1.00000\n');
 fprintf('    Look at Display_y = 0.80000\n\n');
-fprintf(' 2. arm_trajectory.slx Press Ctrl+T\n');
+fprintf(' 2. simulink/arm_trajectory.slx Press Ctrl+T\n');
 fprintf('    XY Graph traces a path\n');
 fprintf('    Scope shows two angle curves\n\n');
-fprintf(' 3. Then run verify_simulink.m\n');
+fprintf(' 3. Then run tests/verify_simulink.m\n');
 fprintf('================================================\n');

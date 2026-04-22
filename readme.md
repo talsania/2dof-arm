@@ -16,22 +16,29 @@ Both use closed-form trigonometric solutions. No toolbox dependencies.
 
 ## Quick Start
 
+1. **Run initialization script** (once per MATLAB session):
 ```matlab
-setup_simulink              % initialize Simulink paths (run once)
-build_simulink_model        % build two models automatically
+cd simulink
+setup_simulink              % initialize paths
 ```
 
-Then in each Simulink window:
-- Press **Ctrl+T** to run simulation
-
-Finally,
+2. **Build Simulink models**:
 ```matlab
+build_simulink_model        % builds arm_static.slx and arm_trajectory.slx
+```
+
+3. **Run simulations** (in each Simulink window):
+   - Press **Ctrl+T** to simulate
+
+4. **Verify results**:
+```matlab
+cd ../tests
 verify_simulink             % check all results
 ```
 
 ## Two Demo Models
 
-### 1. arm_static.slx (Static Test)
+### 1. simulink/arm_static.slx (Static Test)
 
 <img width="1355" height="659" alt="image" src="https://github.com/user-attachments/assets/5997a8cf-8347-4722-94dd-b6bba7dbb822" />
 
@@ -44,7 +51,7 @@ verify_simulink             % check all results
   - Display_t1 = 0.00000 rad
   - Display_t2 = 1.57080 rad (90°)
 
-### 2. arm_trajectory.slx (Dynamic Test)
+### 2. simulink/arm_trajectory.slx (Dynamic Test)
 
 <img width="1463" height="588" alt="image" src="https://github.com/user-attachments/assets/08b6d22f-dd59-421f-9fee-9e47fc7c0a58" />
 
@@ -68,6 +75,26 @@ PASS  FK/IK: (-1.00, -0.80) → (-1.00000, -0.80000) error = 2.5e-16
 PASS  Singularity (fully extended): det(J) = -0.00000 (expected 0)
 PASS  Singularity (45°, 90°): det(J) = 0.80000 (non-singular, expected ~0.8)
 ```
+
+## Algorithm Tests (`tests/main_test_2DOF.m`)
+
+<img width="2879" height="1459" alt="image" src="https://github.com/user-attachments/assets/edb5a915-0b46-442b-bbfe-6b427671660d" />
+
+**Output includes:**
+- ✓ FK tests (all 3 methods: geometric, DH, rotation-chain)
+- ✓ IK tests (elbow-up/down, all quadrants)
+- ✓ Round-trip FK→IK→FK with 1000 random samples
+- ✓ Jacobian singularity detection
+- ✓ DH matrix validity checks
+- ✓ Workspace visualization plots
+- ✓ Animation of arm motion
+
+**Run:**
+```matlab
+cd tests
+main_test_2DOF    % Press F5
+```
+
 ## Mathematics & Algorithm Details
 
 ### Forward Kinematics (Three Methods)
