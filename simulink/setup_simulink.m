@@ -9,10 +9,15 @@
 %   4. Command Window should print "Ready. Now open arm_2dof.slx"
 %   5. Then open arm_2dof.slx
 
-% Add this folder to MATLAB path
-folder = fileparts(mfilename('fullpath'));
-addpath(folder);
-fprintf('Path added: %s\n', folder);
+% Add simulink and kinematics folders to MATLAB path
+simulink_folder = fileparts(mfilename('fullpath'));
+project_root = fileparts(simulink_folder);
+kinematics_folder = fullfile(project_root, 'kinematics');
+
+addpath(simulink_folder);
+addpath(kinematics_folder);
+fprintf('Path added: %s\n', simulink_folder);
+fprintf('Path added: %s\n', kinematics_folder);
 
 % Quick self-check
 L1 = 1.0; L2 = 0.8;
@@ -25,5 +30,5 @@ if ok && err < 1e-10
     fprintf('\nReady. Now open arm_2dof.slx\n');
 else
     fprintf('Self-check FAILED  (err=%.2e, ok=%d)\n', err, ok);
-    fprintf('Make sure all .m files are in the same folder.\n');
+    fprintf('Make sure kinematics files are in the kinematics folder.\n');
 end

@@ -1,9 +1,15 @@
 %% VERIFY_SIMULINK.m
 %  Run AFTER simulating arm_static.slx and arm_trajectory.slx
-%    1. Open arm_static.slx → press Ctrl+T
-%    2. Open arm_trajectory.slx → press Ctrl+T
+%    1. Open simulink/arm_static.slx → press Ctrl+T
+%    2. Open simulink/arm_trajectory.slx → press Ctrl+T
 %    3. Come back here → press F5
 %    4. All checks should print PASS
+
+% Add kinematics folder to path for custom_FK/IK functions
+test_folder = fileparts(mfilename('fullpath'));
+project_root = fileparts(test_folder);
+kinematics_folder = fullfile(project_root, 'kinematics');
+addpath(kinematics_folder);
 
 fprintf('================================================\n');
 fprintf(' Simulink Results Verification\n');
