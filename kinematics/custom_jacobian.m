@@ -41,11 +41,6 @@ function [J, w, det_J, is_singular, best_elbow] = custom_jacobian(theta1, theta2
 %     Singularity: det(J) = L1*L2*sin(t2)
 %       => singular when t2 = 0 or t2 = ±pi (arm fully extended/folded)
 
-    if nargin < 4
-        error(['custom_jacobian requires at least 4 inputs: ', ...
-               'custom_jacobian(theta1, theta2, L1, L2, [lambda_thresh])']);
-    end
-
     if nargin < 5, lambda_thresh = 1e-4; end
 
     % Precompute trig
