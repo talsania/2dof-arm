@@ -1,5 +1,5 @@
 %% MAIN_TEST_2DOF.m
-%  Phase 1 — Complete test script for 2-DOF serial arm FK + IK
+%  Complete test script for 2-DOF serial arm FK + IK
 %  Run this BEFORE opening Simulink to confirm all algorithms work.
 %    1. Open MATLAB
 %    2. Navigate to the project root folder
@@ -16,7 +16,7 @@ addpath(visualization_folder);
 
 clear; clc; close all;
 fprintf('================================================\n');
-fprintf(' 2-DOF Planar Arm — Phase 1 Test Suite\n');
+fprintf(' 2-DOF Planar Arm - 1 Test Suite\n');
 fprintf('================================================\n\n');
 
 %% ── PARAMETERS ──────────────────────────────────────────────────
@@ -81,7 +81,7 @@ for i = 1:size(ik_tests,1)
             fail = fail + 1;
         end
     else
-        fprintf('  SKIP  IK (% .2f,% .2f) — outside workspace\n', xt, yt);
+        fprintf('  SKIP  IK (% .2f,% .2f) - outside workspace\n', xt, yt);
     end
 end
 
@@ -105,10 +105,10 @@ for i = 1:1000
 end
 
 if max_err < 1e-10 && n_fail == 0
-    fprintf('  PASS  1000 samples — max error = %.2e\n', max_err);
+    fprintf('  PASS  1000 samples - max error = %.2e\n', max_err);
     pass = pass + 1;
 else
-    fprintf('  FAIL  %d samples failed — max error = %.2e\n', n_fail, max_err);
+    fprintf('  FAIL  %d samples failed - max error = %.2e\n', n_fail, max_err);
     fail = fail + 1;
 end
 
@@ -171,7 +171,7 @@ sgtitle('IK dual solutions for same target');
 fprintf('  Elbow-up/down figure opened.\n');
 
 % Animation: circular path
-figure('Name','Animation — circular path','Color','white');
+figure('Name','Animation - circular path','Color','white');
 r_c = 0.6; cx = 0.8; cy = 0.4;
 phi_arr = linspace(0, 2*pi, 120);
 ee_x = zeros(1,120); ee_y = zeros(1,120);
@@ -197,9 +197,9 @@ fprintf('  Animation complete.\n');
 fprintf('\n================================================\n');
 fprintf(' RESULTS:  PASS = %d   FAIL = %d\n', pass, fail);
 if fail == 0
-    fprintf(' STATUS:   ALL PASS — Ready for Simulink\n');
+    fprintf(' STATUS:   ALL PASS - Ready for Simulink\n');
 else
-    fprintf(' STATUS:   FAILURES FOUND — fix before Simulink\n');
+    fprintf(' STATUS:   FAILURES FOUND - fix before Simulink\n');
 end
 fprintf('================================================\n');
 

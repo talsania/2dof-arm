@@ -2,7 +2,7 @@ function [theta1, theta2] = ik_block_simulink(x_target, y_target)
 % IK_BLOCK_SIMULINK  Drop this function INSIDE a Simulink MATLAB Function block.
 %
 %   COPY-PASTE THIS ENTIRE FILE into the MATLAB Function block editor.
-%   Do NOT call it from outside — Simulink calls it automatically.
+%   Do NOT call it from outside - Simulink calls it automatically.
 %
 %   Inputs  (connected as Simulink input ports):
 %     x_target   desired end-effector X position (m)
@@ -12,7 +12,7 @@ function [theta1, theta2] = ik_block_simulink(x_target, y_target)
 %     theta1     joint 1 angle in radians
 %     theta2     joint 2 angle in radians
 %
-%   LINK LENGTHS — must match fk_block_simulink.m:
+%   LINK LENGTHS - must match fk_block_simulink.m:
     L1 = 1.0;   % link 1 length (m)
     L2 = 0.8;   % link 2 length (m)
 
@@ -25,7 +25,7 @@ function [theta1, theta2] = ik_block_simulink(x_target, y_target)
     r_max = L1 + L2;
     r_min = abs(L1 - L2);
 
-    % saturate r to valid workspace (prevents NaN — Simulink safe)
+    % saturate r to valid workspace (prevents NaN - Simulink safe)
     r_safe = max(r_min + 1e-6, min(r_max - 1e-6, r));
 
     % scale target to lie inside workspace if it was outside

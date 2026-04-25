@@ -51,7 +51,7 @@ new_system(mdl1);
 open_system(mdl1);
 fprintf('\n=== Building Model 1: %s ===\n', mdl1);
 
-% Step A: Add all blocks
+% A: Add all blocks
 add_block('simulink/Sources/Constant', [mdl1 '/x_target'], ...
     'Value', '1.0', 'Position', [30 60 90 90]);
 
@@ -82,7 +82,7 @@ add_block('simulink/Sinks/To Workspace', [mdl1 '/ee_out'], ...
 
 fprintf('  Blocks added\n');
 
-% Step B: Inject code BEFORE wiring (so ports exist)
+% B: Inject code BEFORE wiring (so ports exist)
 try
     rt     = sfroot();
     m      = rt.find('-isa', 'Simulink.BlockDiagram', 'Name', mdl1);
@@ -100,11 +100,11 @@ catch ME
     fprintf('  --> Manually paste fk_block_simulink.m into FK_Block\n');
 end
 
-% ── STEP C: save so ports refresh ───────────────────────────────
+% ── C: save so ports refresh ───────────────────────────────
 save_system(mdl1);
 pause(1);   % give Simulink a moment to register the new ports
 
-% ── STEP D: wire signals ─────────────────────────────────────────
+% ── D: wire signals ─────────────────────────────────────────
 try
     add_line(mdl1, 'x_target/1', 'IK_Block/1', 'autorouting', 'on');
     add_line(mdl1, 'y_target/1', 'IK_Block/2', 'autorouting', 'on');
@@ -121,7 +121,7 @@ catch ME
     fprintf('  --> Connect blocks manually in the Simulink canvas\n');
 end
 
-% Step E: Configure solver
+% E: Configure solver
 set_param(mdl1, 'StopTime', '0.1', 'Solver', 'ode45', 'MaxStep', '0.01');
 
 save_system(mdl1);
@@ -140,11 +140,11 @@ new_system(mdl2);
 open_system(mdl2);
 fprintf('\n=== Building Model 2: %s ===\n', mdl2);
 
-% Step A: Add blocks
+% A: Add blocks
 % x target: sine wave, moves between 0.6 and 1.4
 add_block('simulink/Sources/Sine Wave', [mdl2 '/x_wave'], ...
     'Amplitude', '0.4', 'Bias', '1.0', 'Frequency', '0.5', ...
-    'Phase', '0', 'Position', [30 60 90 90]);
+    '', '0', 'Position', [30 60 90 90]);
 
 % y target: constant 0.6
 add_block('simulink/Sources/Constant', [mdl2 '/y_const'], ...
@@ -154,7 +154,7 @@ add_block('simulink/Sources/Constant', [mdl2 '/y_const'], ...
 add_block('simulink/User-Defined Functions/MATLAB Function', ...
     [mdl2 '/IK_Block'], 'Position', [160 75 300 155]);
 
-% Memory blocks — hold angles one time step (correct for continuous IK)
+% Memory blocks - hold angles one time (correct for continuous IK)
 add_block('simulink/Discrete/Memory', [mdl2 '/Mem_t1'], ...
     'InitialCondition', '0', 'Position', [370 65 420 95]);
 add_block('simulink/Discrete/Memory', [mdl2 '/Mem_t2'], ...
@@ -164,12 +164,12 @@ add_block('simulink/Discrete/Memory', [mdl2 '/Mem_t2'], ...
 add_block('simulink/User-Defined Functions/MATLAB Function', ...
     [mdl2 '/FK_Block'], 'Position', [480 80 620 160]);
 
-% XY Graph — shows EE (x,y) path
+% XY Graph - shows EE (x,y) path
 add_block('simulink/Sinks/XY Graph', [mdl2 '/XY_EE'], ...
     'xmin', '-2', 'xmax', '2', 'ymin', '-2', 'ymax', '2', ...
     'Position', [690 60 760 130]);
 
-% Scope — shows joint angles over time
+% Scope - shows joint angles over time
 add_block('simulink/Sinks/Scope', [mdl2 '/Scope_Angles'], ...
     'NumInputPorts', '2', 'Position', [690 150 740 200]);
 
@@ -180,7 +180,7 @@ add_block('simulink/Sinks/To Workspace', [mdl2 '/ee_traj'], ...
 
 fprintf('  Blocks added\n');
 
-% Step B: Inject code BEFORE wiring
+% B: Inject code BEFORE wiring
 try
     rt     = sfroot();
     m      = rt.find('-isa', 'Simulink.BlockDiagram', 'Name', mdl2);
@@ -197,11 +197,11 @@ catch ME
     fprintf('  --> Manually paste code into IK_Block and FK_Block\n');
 end
 
-% ── STEP C: save so ports refresh ───────────────────────────────
+% ── C: save so ports refresh ───────────────────────────────
 save_system(mdl2);
 pause(1);
 
-% ── STEP D: wire signals ─────────────────────────────────────────
+% ── D: wire signals ─────────────────────────────────────────
 try
     add_line(mdl2, 'x_wave/1',     'IK_Block/1',     'autorouting', 'on');
     add_line(mdl2, 'y_const/1',    'IK_Block/2',     'autorouting', 'on');
@@ -220,7 +220,7 @@ catch ME
     fprintf('  --> Connect blocks manually in the Simulink canvas\n');
 end
 
-% Step E: Configure solver
+% E: Configure solver
 set_param(mdl2, 'StopTime', '20', 'Solver', 'ode45', ...
     'MaxStep', '0.05');
 
