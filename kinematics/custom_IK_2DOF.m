@@ -1,5 +1,5 @@
 function [theta1, theta2, valid] = custom_IK_2DOF(x_target, y_target, L1, L2, elbow_up)
-% CUSTOM_IK_2DOF  Inverse Kinematics — 2-DOF planar serial arm
+% CUSTOM_IK_2DOF  Inverse Kinematics - 2-DOF planar serial arm
 %
 %   USAGE:
 %     [t1, t2, ok] = custom_IK_2DOF(x, y, L1, L2)        % elbow-up (default)
@@ -15,7 +15,7 @@ function [theta1, theta2, valid] = custom_IK_2DOF(x_target, y_target, L1, L2, el
 %     theta2   joint 2 angle in radians, range [-pi, pi]
 %     valid    1 if target reachable, 0 if out of workspace
 %
-%   ALGORITHM: Closed-form geometric — Law of Cosines.
+%   ALGORITHM: Closed-form geometric - Law of Cosines.
 %   Zero toolbox dependencies.
 %
 %   DERIVATION SUMMARY:
@@ -48,7 +48,7 @@ function [theta1, theta2, valid] = custom_IK_2DOF(x_target, y_target, L1, L2, el
         return;
     end
 
-    % Step 1: Solve theta2 (law of cosines)
+    % 1: Solve theta2 (law of cosines)
     cos_theta2 = (x_target^2 + y_target^2 - L1^2 - L2^2) / (2 * L1 * L2);
     cos_theta2 = max(-1, min(1, cos_theta2));   % clamp for float safety
 
@@ -59,7 +59,7 @@ function [theta1, theta2, valid] = custom_IK_2DOF(x_target, y_target, L1, L2, el
         theta2 = atan2(-sin_theta2, cos_theta2);   % elbow-down (-sin)
     end
 
-    % Step 2: Solve theta1
+    % 2: Solve theta1
     alpha  = atan2(y_target, x_target);
     beta   = atan2(L2 * sin(theta2), L1 + L2 * cos(theta2));
 

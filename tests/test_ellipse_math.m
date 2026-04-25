@@ -6,7 +6,7 @@ addpath(fullfile(root_dir, 'visualization'));
 addpath(test_dir);
 
 fprintf('==========================================================\n');
-fprintf('  plot_jacobian_ellipse — Math Verification (headless)\n');
+fprintf('  plot_jacobian_ellipse - Math Verification (headless)\n');
 fprintf('==========================================================\n\n');
 
 L1=1.0; L2=0.8; pass=0; fail=0;
@@ -133,7 +133,7 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n==========================================================\n');
 fprintf('  RESULTS: PASS=%d  FAIL=%d  TOTAL=%d\n',pass,fail,pass+fail);
 if fail==0
-    fprintf('  STATUS:  ALL PASS — ellipse math verified\n');
+    fprintf('  STATUS:  ALL PASS - ellipse math verified\n');
 else
     fprintf('  STATUS:  %d FAILURE(S)\n',fail);
 end

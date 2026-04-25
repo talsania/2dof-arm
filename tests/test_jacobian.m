@@ -10,7 +10,7 @@ addpath(test_dir);
 
 clc;
 fprintf('==========================================================\n');
-fprintf('  test_jacobian.m  —  Stage 1 & 2 Unit Tests\n');
+fprintf('  test_jacobian.m\n');
 fprintf('==========================================================\n\n');
 
 L1  = 1.0;
@@ -20,7 +20,7 @@ pass = 0;
 fail = 0;
 
 % Group A: Jacobian structure and math
-fprintf('GROUP A — Jacobian structure & math\n');
+fprintf('GROUP A - Jacobian structure & math\n');
 fprintf('----------------------------------------------------------\n');
 
 %% A1: Size and type
@@ -101,7 +101,7 @@ ok     = spread < TOL;
 fprintf('    t2=pi/3  det_spread=%.2e (expect 0)  => %s\n', spread, rs(ok));
 if ok, pass=pass+1; else, fail=fail+1; end
 
-%% A6: Output count — all 5 outputs accessible
+%% A6: Output count - all 5 outputs accessible
 fprintf('A6: All 5 outputs returned correctly\n');
 [J,w,det_J,is_sing,best_el] = custom_jacobian(pi/4, pi/2, L1, L2);
 ok = isequal(size(J),[2 2]) && isscalar(w) && isscalar(det_J) ...
@@ -112,7 +112,7 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group B: Singularity and manipulability
-fprintf('GROUP B — Singularity & manipulability\n');
+fprintf('GROUP B - Singularity & manipulability\n');
 fprintf('----------------------------------------------------------\n');
 
 %% B1: Singular when t2=0 (fully extended)
@@ -166,7 +166,7 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group C: Velocity IK exact inverse
-fprintf('GROUP C — Velocity IK: exact inverse\n');
+fprintf('GROUP C - Velocity IK: exact inverse\n');
 fprintf('----------------------------------------------------------\n');
 
 cfgs2 = [pi/4 pi/2; pi/6 pi/3; -pi/3 2*pi/3; pi/3 pi/4; pi/5 3*pi/5];
@@ -188,7 +188,7 @@ end
 fprintf('    All 5 within tol=1e-10  => %s\n', rs(c1ok));
 if c1ok, pass=pass+1; else, fail=fail+1; end
 
-%% C2: Fallback at singularity — no NaN/Inf
+%% C2: Fallback at singularity - no NaN/Inf
 fprintf('C2: Safe fallback at singularity (t2=0, t2=pi)\n');
 sing_pts = [pi/4 0; -pi/3 pi; pi/2 0; 0 -pi];
 c2ok = true;
@@ -203,7 +203,7 @@ end
 fprintf('    4 singular configs: no NaN/Inf  => %s\n', rs(c2ok));
 if c2ok, pass=pass+1; else, fail=fail+1; end
 
-%% C3: Condition number — finite for normal, Inf for singular
+%% C3: Condition number - finite for normal, Inf for singular
 fprintf('C3: Condition number finite for normal pose, Inf at singularity\n');
 [~,~,cn_norm] = custom_IK_velocity(pi/4, pi/2, [0.1;0], L1, L2, 'exact');
 [~,~,cn_sing] = custom_IK_velocity(0,    0,    [0.1;0], L1, L2, 'transpose');
@@ -215,10 +215,10 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group D: Velocity IK transpose
-fprintf('GROUP D — Velocity IK: transpose\n');
+fprintf('GROUP D - Velocity IK: transpose\n');
 fprintf('----------------------------------------------------------\n');
 
-%% D1: Never NaN/Inf — even at all singularities
+%% D1: Never NaN/Inf - even at all singularities
 fprintf('D1: transpose never produces NaN/Inf (10 singular + 10 random configs)\n');
 all_pts = [0 0; 0 pi; 0 -pi; pi/4 0; -pi/3 pi; pi/2 0; pi 0; -pi/4 pi;
            0.1 pi-0.01; 0 pi/2];
@@ -278,7 +278,7 @@ if d3ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group E: Velocity IK damped least squares
-fprintf('GROUP E — Velocity IK: DLS\n');
+fprintf('GROUP E - Velocity IK: DLS\n');
 fprintf('----------------------------------------------------------\n');
 
 %% E1: DLS(lambda=0) == exact for non-singular configs
@@ -336,7 +336,7 @@ if e3ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group F: Auto mode
-fprintf('GROUP F — Velocity IK: AUTO mode selection\n');
+fprintf('GROUP F - Velocity IK: AUTO mode selection\n');
 fprintf('----------------------------------------------------------\n');
 
 %% F1: Method selection by manipulability band
@@ -379,10 +379,10 @@ if f2ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group G: Integration and dynamics
-fprintf('GROUP G — Integration & dynamics\n');
+fprintf('GROUP G - Integration & dynamics\n');
 fprintf('----------------------------------------------------------\n');
 
-%% G1: Integrate velocity IK — EE tracks desired velocity accurately
+%% G1: Integrate velocity IK - EE tracks desired velocity accurately
 fprintf('G1: Euler integration tracks desired EE velocity (x-direction)\n');
 t1 = pi/4; t2 = pi/2;
 xd_des = [0.3; 0.0];
@@ -401,7 +401,7 @@ fprintf('    desired=[%.2f, %.2f]  got=[%.4f, %.4f]  => %s\n', ...
         xd_des(1), xd_des(2), vx_actual, vy_actual, rs(ok));
 if ok, pass=pass+1; else, fail=fail+1; end
 
-%% G2: Circular velocity path — EE stays near expected arc
+%% G2: Circular velocity path - EE stays near expected arc
 fprintf('G2: Circular velocity path: EE traces arc (radius test)\n');
 t1 = pi/4; t2 = pi/2;
 [x0,y0] = custom_FK_2DOF(t1, t2, L1, L2);
@@ -432,7 +432,7 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n==========================================================\n');
 fprintf('  RESULTS: PASS=%-2d  FAIL=%-2d  TOTAL=%d\n', pass, fail, pass+fail);
 if fail == 0
-    fprintf('  STATUS:  ALL PASS  — Stage 1 & 2 fully verified\n');
+    fprintf('  STATUS:  ALL PASS  \n');
 else
     fprintf('  STATUS:  %d FAILURE(S) found\n', fail);
     fprintf('  Check FAIL lines above for details.\n');

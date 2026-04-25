@@ -30,7 +30,7 @@ labels = {
     '\theta_1=-30°, \theta_2=120°'
 };
 
-figure('Name', 'Manipulability Ellipse — 6 Configurations', ...
+figure('Name', 'Manipulability Ellipse - 6 Configurations', ...
        'Color', 'white', 'Position', [50 50 1200 700]);
 
 for i = 1:6
@@ -48,7 +48,7 @@ for i = 1:6
 
     title(labels{i}, 'FontSize', 9, 'FontWeight', 'bold');
 end
-sgtitle('Velocity Manipulability Ellipse — Key Configurations', ...
+sgtitle('Velocity Manipulability Ellipse - Key Configurations', ...
         'FontSize', 13, 'FontWeight', 'bold');
 
 % Figure 2: w and singular values vs t2 (t1 fixed)
@@ -88,7 +88,7 @@ sgtitle('How the ellipse changes with elbow angle', ...
         'FontSize', 12, 'FontWeight', 'bold');
 
 % Figure 3: animation while t2 sweeps
-figure('Name', 'Ellipse Animation — elbow sweeping', ...
+figure('Name', 'Ellipse Animation - elbow sweeping', ...
        'Color', 'white', 'Position', [700 50 560 520]);
 
 t1_fixed = deg2rad(20);

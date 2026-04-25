@@ -1,5 +1,5 @@
 function [x, y, x1, y1, T_total] = custom_FK_2DOF(theta1, theta2, L1, L2, method)
-% CUSTOM_FK_2DOF  Forward Kinematics — 2-DOF planar serial arm
+% CUSTOM_FK_2DOF  Forward Kinematics - 2-DOF planar serial arm
 %
 %   USAGE:
 %     [x, y] = custom_FK_2DOF(t1, t2, L1, L2)              % geometric (default)
@@ -18,7 +18,7 @@ function [x, y, x1, y1, T_total] = custom_FK_2DOF(theta1, theta2, L1, L2, method
 %     x1, y1   elbow (joint 2) position (m)
 %     T_total  4x4 homogeneous transform base->EE (populated for 'dh' and 'rotchain')
 %
-%   THREE ALGORITHMS — NO TOOLBOX USED:
+%   THREE ALGORITHMS - NO TOOLBOX USED:
 %
 %   geometric  : direct trig chain. Fastest (4 trig ops). Default.
 %   dh         : DH 4x4 matrix chain. Returns full pose + orientation.
@@ -28,7 +28,7 @@ function [x, y, x1, y1, T_total] = custom_FK_2DOF(theta1, theta2, L1, L2, method
 %   WHY FASTER THAN MATLAB BUILT-IN:
 %     getTransform() in Robotics Toolbox allocates a rigidBodyTree object
 %     and runs object-oriented overhead per call. Our functions are plain
-%     trig — no object allocation, no toolbox license required.
+%     trig - no object allocation, no toolbox license required.
 
     if nargin < 5, method = 'geometric'; end
     T_total = eye(4);

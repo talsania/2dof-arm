@@ -15,8 +15,8 @@ function [J, w, det_J, is_singular, best_elbow] = custom_jacobian(theta1, theta2
 %     w              Yoshikawa manipulability measure  w = |det(J)|
 %     det_J          raw determinant of J (signed)
 %     is_singular    logical: true if |det_J| < lambda_thresh
-%     best_elbow     'up' or 'down' — whichever elbow config has higher w
-%                    (requires x_target,y_target — only meaningful when called
+%     best_elbow     'up' or 'down' - whichever elbow config has higher w
+%                    (requires x_target,y_target - only meaningful when called
 %                     from custom_IK_velocity with elbow comparison)
 %
 %   MATH:
@@ -63,7 +63,7 @@ function [J, w, det_J, is_singular, best_elbow] = custom_jacobian(theta1, theta2
     % best_elbow: compare w for elbow-up vs elbow-down
     % Analytical: det(J_up) = L1*L2*sin(t2_up), det(J_down) = L1*L2*sin(t2_down)
     % Since t2_down = -t2_up, sin(t2_down) = -sin(t2_up)
-    % So |det_up| == |det_down| always — elbow choice doesn't change w for same target
+    % So |det_up| == |det_down| always - elbow choice doesn't change w for same target
     % We still return based on current config sign
     if det_J >= 0
         best_elbow = 'up';

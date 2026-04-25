@@ -18,7 +18,7 @@ fprintf('================================================\n\n');
 L1 = 1.0; L2 = 0.8;
 pass = 0; fail = 0;
 
-% V1: Static model — Display values
+% V1: Static model - Display values
 fprintf('--- V1: arm_static expected output ---\n');
 fprintf('   Open arm_static.slx and check the Display blocks:\n');
 fprintf('   Display_x  should show:  1.00000\n');
@@ -49,7 +49,7 @@ if exist('ee_static','var') && ~isempty(ee_static)
             ifelse_str(ok,'PASS','FAIL'), last_x);
     if ok, pass=pass+1; else, fail=fail+1; end
 else
-    fprintf('  SKIP — ee_static not found. Run arm_static.slx first (Ctrl+T).\n');
+    fprintf('  SKIP - ee_static not found. Run arm_static.slx first (Ctrl+T).\n');
 end
 
 % V3: Check ee_traj from trajectory model
@@ -64,7 +64,7 @@ if exist('ee_traj','var') && ~isempty(ee_traj)
     fprintf('        %d trajectory samples recorded\n', length(ee_traj));
     if ok, pass=pass+1; else, fail=fail+1; end
 else
-    fprintf('  SKIP — ee_traj not found. Run arm_trajectory.slx first (Ctrl+T).\n');
+    fprintf('  SKIP - ee_traj not found. Run arm_trajectory.slx first (Ctrl+T).\n');
 end
 
 % V4: FK/IK algorithm precision (always runs)
