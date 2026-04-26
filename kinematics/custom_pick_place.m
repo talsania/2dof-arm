@@ -48,6 +48,9 @@ function traj = custom_pick_place(pick, place, L1, L2, options)
     ph_out = zeros(total_pts, 1);
 
     n_failed = 0;
+    nr_fail_count = 0;
+    cf_recovery_count = 0;
+    both_fail_count = 0;
 
     % IK options
     ik_opts.init     = 'closedform';
@@ -78,18 +81,25 @@ function traj = custom_pick_place(pick, place, L1, L2, options)
 
             % Solve IK with Newton, then fall back if needed
             ik_opts.init = 'closedform';
-            [t1, t2, ok] = custom_IK_newton(xw, yw, L1, L2, ik_opts);
+            [t1, t2, ok_nr] = custom_IK_newton(xw, yw, L1, L2, ik_opts);
+            ok = ok_nr;
 
-            if ~ok
+            if ~ok_nr
+                nr_fail_count = nr_fail_count + 1;
+
                 % Fallback to closed-form IK
-                [t1, t2, ok] = custom_IK_2DOF(xw, yw, L1, L2, eup);
-            end
+                [t1, t2, ok_cf] = custom_IK_2DOF(xw, yw, L1, L2, eup);
+                ok = ok_cf;
 
-            if ~ok
-                % Reuse the previous angles if IK fails
-                t1 = t1_prev;
-                t2 = t2_prev;
-                n_failed = n_failed + 1;
+                if ok_cf
+                    cf_recovery_count = cf_recovery_count + 1;
+                else
+                    % Reuse the previous angles if both solvers fail
+                    t1 = t1_prev;
+                    t2 = t2_prev;
+                    n_failed = n_failed + 1;
+                    both_fail_count = both_fail_count + 1;
+                end
             end
 
             % Manipulability
@@ -120,6 +130,9 @@ function traj = custom_pick_place(pick, place, L1, L2, options)
     traj.phase_labels = phase_labels;
     traj.valid        = (n_failed == 0);
     traj.n_failed     = n_failed;
+    traj.nr_fail_count = nr_fail_count;
+    traj.cf_recovery_count = cf_recovery_count;
+    traj.both_fail_count = both_fail_count;
     traj.pick         = pick(:)';
     traj.place        = place(:)';
     traj.home         = home(:)';

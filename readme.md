@@ -61,7 +61,7 @@ Singular at θ2 = 0 or ±π. Maximum w = L1·L2 = 0.8 at θ2 = π/2.
 | `transpose` | w <= 0.01, Jᵀ, always safe |
 | `auto` | selects above by w automatically |
 
-`demo.m` shows the manipulability ellipse for 6 configurations and animates it sweeping θ2 from 10° to 170° and back:
+`demo_jacobian_ellipse.m` shows the manipulability ellipse for 6 configurations and animates it sweeping θ2 from 10° to 170° and back:
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/1005435f-1ee1-4eaa-838c-e10c4edbb6e9" width="100%" />
@@ -151,7 +151,13 @@ Produces three figures and a live animation.
 Typical output:
 ```
 Trajectory: 280 waypoints  |  valid=1  |  n_failed=0
+  nr_fail_count=3  |  cf_recovery_count=3  |  both_fail_count=0
 ```
+
+Log fields:
+- `nr_fail_count`: Newton failed at these waypoints.
+- `cf_recovery_count`: closed-form IK recovered after Newton failure.
+- `both_fail_count`: both Newton and closed-form failed; previous angles were reused.
 
 ---
 
