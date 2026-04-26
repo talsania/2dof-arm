@@ -135,7 +135,9 @@ Produces three figures and a live animation.
 - Manipulability ellipse drawn at end-effector for each pose
 - Title shows phase name and w value
 
-<img width="1682" height="525" alt="Pick   Place - Phase Snapshots" src="https://github.com/user-attachments/assets/d4857d7b-9d6d-4e8a-ae12-7d4fba642273" />
+<p align="center">
+  <img width="1682" height="525" alt="Pick   Place - Phase Snapshots" src="https://github.com/user-attachments/assets/d4857d7b-9d6d-4e8a-ae12-7d4fba642273" />
+</p>
 
 **Figure 3: Live animation**
 - Arm moves through all 7 phases
