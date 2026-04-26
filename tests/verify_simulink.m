@@ -11,15 +11,14 @@ project_root = fileparts(test_folder);
 kinematics_folder = fullfile(project_root, 'kinematics');
 addpath(kinematics_folder);
 
-fprintf('================================================\n');
-fprintf(' Simulink Results Verification\n');
-fprintf('================================================\n\n');
+fprintf('[==========] verify_simulink.m\n');
+fprintf('[----------] Simulink results verification\n\n');
 
 L1 = 1.0; L2 = 0.8;
 pass = 0; fail = 0;
 
 % V1: Static model - Display values
-fprintf('--- V1: arm_static expected output ---\n');
+fprintf('[----------] V1: arm_static expected output\n');
 fprintf('   Open arm_static.slx and check the Display blocks:\n');
 fprintf('   Display_x  should show:  1.00000\n');
 fprintf('   Display_y  should show:  0.80000\n');
@@ -41,7 +40,7 @@ fprintf('   x_ee = %.5f  y_ee = %.5f\n', x_exp, y_exp);
 fprintf('   Error = %.2e\n\n', sqrt((x_exp-xt)^2+(y_exp-yt)^2));
 
 % V2: Check ee_static in workspace
-fprintf('--- V2: ee_static variable (from arm_static To Workspace block) ---\n');
+fprintf('[----------] V2: ee_static variable (from arm_static To Workspace block)\n');
 if exist('ee_static','var') && ~isempty(ee_static)
     last_x = ee_static(end,1);
     ok = abs(last_x - 1.0) < 0.01;
@@ -53,7 +52,7 @@ else
 end
 
 % V3: Check ee_traj from trajectory model
-fprintf('\n--- V3: ee_traj variable (from arm_trajectory To Workspace block) ---\n');
+fprintf('\n[----------] V3: ee_traj variable (from arm_trajectory To Workspace block)\n');
 if exist('ee_traj','var') && ~isempty(ee_traj)
     x_vals = ee_traj(:,1);
     ok1 = (max(x_vals) > 1.0);
@@ -68,7 +67,7 @@ else
 end
 
 % V4: FK/IK algorithm precision (always runs)
-fprintf('\n--- V4: FK/IK algorithm precision (independent of Simulink) ---\n');
+fprintf('\n[----------] V4: FK/IK algorithm precision (independent of Simulink)\n');
 
 tests = [1.0,0.8; 1.5,0.5; -0.8,0.6; 0.3,-1.1; -1.0,-0.8];
 all_ok = 1;
@@ -107,14 +106,14 @@ fprintf('  %s  Normal pose (45,90): det(J)=%.5f  (expected ~0.8)\n', ...
 if ok, pass=pass+1; else, fail=fail+1; end
 
 % Summary
-fprintf('\n================================================\n');
-fprintf(' RESULTS:  PASS = %d   FAIL = %d\n', pass, fail);
+fprintf('\n[==========] Results\n');
+fprintf('PASS = %d   FAIL = %d\n', pass, fail);
 if fail == 0
-    fprintf(' STATUS:   ALL VERIFIED\n');
+    fprintf('STATUS: ALL VERIFIED\n');
 else
-    fprintf(' STATUS:   %d issue(s) found\n', fail);
+    fprintf('STATUS: %d issue(s) found\n', fail);
 end
-fprintf('================================================\n');
+fprintf('[==========]\n');
 
 function s = ifelse_str(cond, a, b)
     if cond, s = a; else, s = b; end

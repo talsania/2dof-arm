@@ -15,11 +15,10 @@ addpath(kinematics_folder);
 addpath(visualization_folder);
 
 clear; clc; close all;
-fprintf('================================================\n');
-fprintf(' 2-DOF Planar Arm - 1 Test Suite\n');
-fprintf('================================================\n\n');
+fprintf('[==========] main_test_2DOF.m\n');
+fprintf('[----------] 2-DOF planar arm test suite\n\n');
 
-%% ── PARAMETERS ──────────────────────────────────────────────────
+%% Parameters
 L1 = 1.0;   % link 1 length (m)
 L2 = 0.8;   % link 2 length (m)
 
@@ -29,8 +28,8 @@ fprintf('Workspace: r_min=%.2f m   r_max=%.2f m\n\n', abs(L1-L2), L1+L2);
 pass = 0;
 fail = 0;
 
-%% ── SECTION 1: FK TESTS ─────────────────────────────────────────
-fprintf('--- FK Tests (all 3 methods) ---\n');
+%% Section 1: FK Tests
+fprintf('[----------] FK tests (all 3 methods)\n');
 
 fk_tests = [0,0; 45,90; 90,-45; -30,60; 180,0; -90,180; 135,-90; 60,60];
 
@@ -55,8 +54,8 @@ for i = 1:size(fk_tests,1)
     end
 end
 
-%% ── SECTION 2: IK TESTS ─────────────────────────────────────────
-fprintf('\n--- IK Tests (elbow-up + down, all quadrants) ---\n');
+%% Section 2: IK Tests
+fprintf('\n[----------] IK tests (elbow-up + down, all quadrants)\n');
 
 ik_tests = [1.8,0; 1.0,1.0; 0.5,1.2; -0.8,0.6; 0.3,-1.1; -1.0,-0.8; 0.0,1.5; -1.5,-0.5];
 
@@ -85,8 +84,8 @@ for i = 1:size(ik_tests,1)
     end
 end
 
-%% ── SECTION 3: ROUND-TRIP ───────────────────────────────────────
-fprintf('\n--- Round-trip FK->IK->FK (1000 random samples) ---\n');
+%% Section 3: Round-trip
+fprintf('\n[----------] Round-trip FK->IK->FK (1000 random samples)\n');
 
 max_err = 0;
 n_fail  = 0;
@@ -112,8 +111,8 @@ else
     fail = fail + 1;
 end
 
-%% ── SECTION 4: SINGULARITY CHECK ───────────────────────────────
-fprintf('\n--- Jacobian determinant (singularity detection) ---\n');
+%% Section 4: Singularity Check
+fprintf('\n[----------] Jacobian determinant (singularity detection)\n');
 
 sing_cases = [0,0; 45,0; 0,180];
 for i = 1:size(sing_cases,1)
@@ -136,8 +135,8 @@ fprintf('  %s  Non-sing (45,90)  det(J)=%.5f  (expected ≠ 0)\n', ...
         ifelse_str(ok,'PASS','FAIL'), d);
 if ok, pass = pass+1; else, fail = fail+1; end
 
-%% ── SECTION 5: DH MATRIX CHECK ─────────────────────────────────
-fprintf('\n--- DH T_total validity (SO2 rotation block) ---\n');
+%% Section 5: DH Matrix Check
+fprintf('\n[----------] DH T_total validity (SO2 rotation block)\n');
 
 [~,~,~,~,T] = custom_FK_2DOF(deg2rad(45), deg2rad(90), L1, L2, 'dh');
 R = T(1:2, 1:2);
@@ -150,8 +149,8 @@ fprintf('  ||R^T R - I|| = %.1e            %s\n', norm(R'*R-eye(2)), ifelse_str(
 fprintf('  EE orientation phi = %.2f deg   (expected 135.00)\n', rad2deg(phi));
 if det_ok && ortho_ok, pass = pass+2; else, fail = fail+2; end
 
-%% ── SECTION 6: PLOTS ────────────────────────────────────────────
-fprintf('\n--- Generating plots ---\n');
+%% Section 6: Plots
+fprintf('\n[----------] Generating plots\n');
 
 % Workspace
 figure('Name','Workspace','Color','white');
@@ -193,15 +192,15 @@ for k = 1:120
 end
 fprintf('  Animation complete.\n');
 
-%% ── SUMMARY ─────────────────────────────────────────────────────
-fprintf('\n================================================\n');
-fprintf(' RESULTS:  PASS = %d   FAIL = %d\n', pass, fail);
+%% Summary
+fprintf('\n[==========] Results\n');
+fprintf('PASS = %d   FAIL = %d\n', pass, fail);
 if fail == 0
-    fprintf(' STATUS:   ALL PASS - Ready for Simulink\n');
+    fprintf('STATUS: ALL PASS - Ready for Simulink\n');
 else
-    fprintf(' STATUS:   FAILURES FOUND - fix before Simulink\n');
+    fprintf('STATUS: FAILURES FOUND - fix before Simulink\n');
 end
-fprintf('================================================\n');
+fprintf('[==========]\n');
 
 % ---- helper (replaces ternary) ----
 function s = ifelse_str(cond, a, b)

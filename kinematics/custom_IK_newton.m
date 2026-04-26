@@ -57,7 +57,6 @@ function [theta1, theta2, valid, iters, err_history] = custom_IK_newton(x_target
         fprintf('NR-IK: target=(%.4f, %.4f)  init=%s  seed=(%.4f, %.4f)\n', ...
                 x_target, y_target, init_mode, theta1, theta2);
         fprintf('  Iter |  ||error||   |  t1(deg)   t2(deg)  | method\n');
-        fprintf('  -----|-------------|------------------------|-------\n');
     end
 
     % Newton loop

@@ -1,184 +1,253 @@
-# 2DOF Serial Arm: Forward & Inverse Kinematics
+# 2DOF Serial Arm: Kinematics, Jacobian & Pick-and-Place
 
-This is a MATLAB/Simulink project demonstrating forward kinematics (FK) and inverse kinematics (IK) for a 2 degree-of-freedom planar serial arm.
+MATLAB project implementing forward kinematics, inverse kinematics (closed-form + Newton-Raphson), velocity IK, Jacobian manipulability, and a pick-and-place trajectory planner for a 2-DOF planar serial arm. No toolbox dependencies.
 
-## Overview
+## Arm Parameters
 
 - Link 1: L1 = 1.0 m
 - Link 2: L2 = 0.8 m
-- Workspace radius: 0.2 m to 1.8 m (fully folded to fully extended)
+- Workspace radius: 0.2 m to 1.8 m
 
-**Core algorithms:**
-- FK: Given angles (θ₁, θ₂) → compute end-effector position (x, y)
-- IK: Given target (x, y) → compute required joint angles
+---
 
-Both use closed-form trigonometric solutions. No toolbox dependencies.
+## How It Was Built: The Three Layers
 
-## Quick Start
+### Layer 1: FK + Closed-Form IK
 
-1. **Run initialization script** (once per MATLAB session):
+`custom_FK_2DOF` implements three methods that must agree to < 1e-10 m:
+
+**Geometric** (default, 4 trig ops):
+```
+x = L1·cos(θ1) + L2·cos(θ1+θ2)
+y = L1·sin(θ1) + L2·sin(θ1+θ2)
+```
+
+**DH Transform** (4×4 matrix chain, extends to N-DOF):
+```
+T_total = T1 × T2
+```
+
+**Rotation chain** (explicit SE2 composition):
+```
+p_ee = R1·[L1;0] + R1·R2·[L2;0]
+```
+
+`custom_IK_2DOF` solves closed-form via the law of cosines:
+```
+cos(θ2) = (r² - L1² - L2²) / (2·L1·L2)
+θ1      = atan2(sin(α-β), cos(α-β))     wrapped to [-π, π]
+```
+Supports elbow-up and elbow-down. Round-trip FK to IK to FK error < 1e-10 m across 1000 random samples.
+
+---
+
+### Layer 2: Jacobian + Velocity IK
+
+`custom_jacobian` computes the 2×2 geometric Jacobian:
+```
+J = [ -L1·s1 - L2·s12,  -L2·s12 ]
+    [  L1·c1 + L2·c12,   L2·c12 ]
+```
+
+Manipulability (Yoshikawa): `w = |det(J)| = |L1·L2·sin(θ2)|`  
+Singular at θ2 = 0 or ±π. Maximum w = L1·L2 = 0.8 at θ2 = π/2.
+
+`custom_IK_velocity` resolves θ̇ from ẋ = J·θ̇ via four modes:
+
+| Mode | When used |
+|------|-----------|
+| `exact` | w > 0.1, direct J inverse |
+| `dls` | 0.01 < w <= 0.1, damped least squares |
+| `transpose` | w <= 0.01, Jᵀ, always safe |
+| `auto` | selects above by w automatically |
+
+`demo.m` shows the manipulability ellipse for 6 configurations and animates it sweeping θ2 from 10° to 170° and back:
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1005435f-1ee1-4eaa-838c-e10c4edbb6e9" width="100%" />
+</p>
+
+<br/>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8a701580-84dd-456f-a74a-b1dfbeb48e7d" width="69%" />
+</p>
+
+<br/>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2d359e31-155b-4c9f-a0a0-89b456186778" width="69%" />
+</p>
+
+---
+
+### Layer 3: Newton-Raphson IK + Pick-and-Place
+
+`custom_IK_newton` adds an iterative Newton-Raphson solver on top of the closed-form seed:
+
+- Seeds from `custom_IK_2DOF`, typically converges in 3 iterations or fewer
+- Switches to DLS (λ = 0.01) near singularities where |det(J)| < 1e-4
+- Default tolerance: 1e-10 m; angles wrapped to [-π, π]
+- Fallback chain in `custom_pick_place`: NR fails, drops to closed-form, then reuses previous angles
+
+`custom_pick_place` plans a 7-phase trajectory:
+
+| Phase | Segment |
+|-------|---------|
+| 1 | Home to Above Pick |
+| 2 | Above Pick to Pick |
+| 3 | Pick to Above Pick |
+| 4 | Above Pick to Above Place |
+| 5 | Above Place to Place |
+| 6 | Place to Above Place |
+| 7 | Above Place to Home |
+
+Each phase is a straight Cartesian line with uniform step spacing. Total waypoints = 7 x n_steps (default 210).
+
+---
+
+## Pick-and-Place Demo
+
+To change pick/place targets, edit the top of `demo_pick_place.m`:
 ```matlab
-cd simulink
-setup_simulink              % initialize paths
+pick_pt  = [0.8,  0.2];   % object location
+place_pt = [-0.7, 0.3];   % drop location
 ```
 
-2. **Build Simulink models**:
+Run from project root:
 ```matlab
-build_simulink_model        % builds arm_static.slx and arm_trajectory.slx
+demo_pick_place
 ```
 
-3. **Run simulations** (in each Simulink window):
-   - Press **Ctrl+T** to simulate
+Produces three figures and a live animation.
 
-4. **Verify results**:
-```matlab
-cd ../tests
-verify_simulink             % check all results
+**Figure 1: Full trajectory overview**
+- Cartesian path coloured by phase (7 colours)
+- Manipulability strip below shows w along all waypoints
+- PICK (red x), PLACE (blue x), HOME (black square), hover lines shown
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/43fadf38-32c6-429f-ad1b-21a3ed40b6fc" width="69%" />
+</p>
+
+**Figure 2: Phase snapshots**
+- One subplot per phase, arm drawn at mid-point of that segment
+- Manipulability ellipse drawn at end-effector for each pose
+- Title shows phase name and w value
+
+<img width="1682" height="525" alt="Pick   Place - Phase Snapshots" src="https://github.com/user-attachments/assets/d4857d7b-9d6d-4e8a-ae12-7d4fba642273" />
+
+**Figure 3: Live animation**
+- Arm moves through all 7 phases
+- Ellipse drawn at EE, gripper state shown (open / closed)
+- Manipulability bar at bottom
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/653242f5-d0f7-4a85-b32a-ef7bd1d6b7fb" width="69%" />
+</p>
+
+Typical output:
+```
+Trajectory: 280 waypoints  |  valid=1  |  n_failed=0
 ```
 
-## Two Demo Models
+---
 
-### 1. simulink/arm_static.slx (Static Test)
-
-<img width="1355" height="659" alt="image" src="https://github.com/user-attachments/assets/5997a8cf-8347-4722-94dd-b6bba7dbb822" />
-
-- **Target:** Fixed position (x=1.0, y=0.8)
-- **Test:** IK solves angles → FK verifies position
-- **Runtime:** 0.1 seconds
-- **Display blocks show:**
-  - Display_x = 1.00000
-  - Display_y = 0.80000
-  - Display_t1 = 0.00000 rad
-  - Display_t2 = 1.57080 rad (90°)
-
-### 2. simulink/arm_trajectory.slx (Dynamic Test)
-
-<img width="1463" height="588" alt="image" src="https://github.com/user-attachments/assets/08b6d22f-dd59-421f-9fee-9e47fc7c0a58" />
-
-- **Target:** Sine wave motion (x: 0.6→1.4, y=0.6 constant)
-- **Test:** IK continuously solves for moving target
-- **Runtime:** 20 seconds
-- **Visualization:**
-- XY_EE graph: traces horizontal line (arm end-effector path)
-  <img width="800" height="500" alt="image" src="https://github.com/user-attachments/assets/b653d0df-0526-44d1-a3ab-6902f4985614" />
-- Scope_Angles: shows θ₁ and θ₂ oscillating over time
-  <img width="487" height="365" alt="image" src="https://github.com/user-attachments/assets/6a5126b1-75a3-44ec-985e-984c4cca47b2" />
-
-## Verification
+## Tests
 
 ```
-PASS  FK/IK: (1.00, 0.80) → (1.00000, 0.80000)  error = 0.0e+00
-PASS  FK/IK: (1.50, 0.50) → (1.50000, 0.50000)  error = 5.6e-17
-PASS  FK/IK: (-0.80, 0.60) → (-0.80000, 0.60000) error = 4.6e-16
-PASS  FK/IK: (0.30, -1.10) → (0.30000, -1.10000) error = 1.7e-16
-PASS  FK/IK: (-1.00, -0.80) → (-1.00000, -0.80000) error = 2.5e-16
-PASS  Singularity (fully extended): det(J) = -0.00000 (expected 0)
-PASS  Singularity (45°, 90°): det(J) = 0.80000 (non-singular, expected ~0.8)
+tests/main_test_2DOF.m      FK (3 methods), IK, 1000-sample round-trip, singularity, DH
+tests/test_jacobian.m       Jacobian formula, FD cross-check, velocity IK all modes (28 tests)
+tests/test_newton.m         convergence, seeds, accuracy vs closed-form, edge cases (21 tests)
+tests/test_pick_place.m     output contract, phases, waypoints, FK consistency (44 tests)
+tests/test_ellipse_math.m   SVD axes, w consistency, singularity, monotone ratio (9 tests)
 ```
 
-## Algorithm Tests (`tests/main_test_2DOF.m`)
-
-<img width="2879" height="1459" alt="image" src="https://github.com/user-attachments/assets/edb5a915-0b46-442b-bbfe-6b427671660d" />
-
-**Output includes:**
-- ✓ FK tests (all 3 methods: geometric, DH, rotation-chain)
-- ✓ IK tests (elbow-up/down, all quadrants)
-- ✓ Round-trip FK→IK→FK with 1000 random samples
-- ✓ Jacobian singularity detection
-- ✓ DH matrix validity checks
-- ✓ Workspace visualization plots
-- ✓ Animation of arm motion
-
-**Run:**
+Run all from project root:
 ```matlab
 cd tests
-main_test_2DOF    % Press F5
+main_test_2DOF
+test_jacobian
+test_newton
+test_pick_place
+test_ellipse_math
 ```
 
-## Mathematics & Algorithm Details
+All tests use `assert()` with per-test tolerances:
 
-### Forward Kinematics (Three Methods)
+| Quantity | Tolerance |
+|----------|-----------|
+| Position | 1e-9 m |
+| FK error | 1e-7 m |
+| Manipulability | 1e-12 |
+| Angle | 1e-9 rad |
 
-**Method 1: Geometric (Default)**
-```
-x = L₁·cos(θ₁) + L₂·cos(θ₁ + θ₂)
-y = L₁·sin(θ₁) + L₂·sin(θ₁ + θ₂)
-```
-Fastest approach: 4 trig operations, no matrix multiplications.
+---
 
-**Method 2: Denavit-Hartenberg (DH) Transform**
-```
-T₁ = [cos(θ₁)  -sin(θ₁)  0  L₁·cos(θ₁)]
-     [sin(θ₁)   cos(θ₁)  0  L₁·sin(θ₁)]
-     [0         0        1  0         ]
-     [0         0        0  1         ]
+## Simulink Models
 
-T₂ = [cos(θ₂)  -sin(θ₂)  0  L₂·cos(θ₂)]
-     [sin(θ₂)   cos(θ₂)  0  L₂·sin(θ₂)]
-     [0         0        1  0         ]
-     [0         0        0  1         ]
-
-T_total = T₁ × T₂
-```
-Standard homogeneous transformation matrices. Easily extends to 3+ DOF.
-
-**Method 3: Rotation Matrix Chain**
-```
-R₁ = [cos(θ₁)  -sin(θ₁)]    R₂ = [cos(θ₂)  -sin(θ₂)]
-     [sin(θ₁)   cos(θ₁)]         [sin(θ₂)   cos(θ₂)]
-
-p_elbow = R₁ × [L₁; 0]
-p_ee = p_elbow + R₁ × R₂ × [L₂; 0]
-```
-Clearest frame composition visualization.
-
-### Inverse Kinematics (Closed-Form, Law of Cosines)
-
-**Derivation:**
-```
-r = √(x² + y²)                              [distance base→target]
-cos(θ₂) = (r² - L₁² - L₂²) / (2·L₁·L₂)    [Law of Cosines]
-θ₂ = atan2(√(1-cos²θ₂), cos(θ₂))          [always in [-π, π]]
-
-α = atan2(y, x)                            [angle to target]
-β = atan2(L₂·sin(θ₂), L₁ + L₂·cos(θ₂))    [correction angle]
-
-θ₁ = atan2(sin(α - β), cos(α - β))        [wrapped to [-π, π]]
-```
-
-**No iterative solving**: instant algebraic solution. Supports elbow-up and elbow-down configurations.
-
-### Comparison: This solver vs. MATLAB Robotics Toolbox
-
-| Aspect | This Project | MATLAB Robotics Toolbox |
-|--------|--------------|------------------------|
-| **Dependencies** | None (pure MATLAB) | Requires Robotics Toolbox license |
-| **FK Speed** | 4 trig ops (~microseconds) | OOP overhead (~milliseconds) |
-| **IK Type** | Closed-form (instant) | Numerical iteration (slow) |
-| **Complexity** | Simple, explicit code | Black box implementation |
-| **Debugging** | Full math visible | Hidden details |
-| **Simulink Integration** | Direct code injection | External function calls |
-| **Scalability** | Trivial to 3+ DOF | Complex OOP framework |
-| **License Cost** | Free | ~$3000 per license |
-| **100k FK calls** | ~0.1 seconds | ~100 seconds |
-
-### Scalability
-
-**Adding a 3rd Joint:**
-
-For 3DOF arm, add one more link and angle:
+Setup (once per session):
 ```matlab
-% In geometric method:
-x = L1*cos(t1) + L2*cos(t1+t2) + L3*cos(t1+t2+t3)
-y = L1*sin(t1) + L2*sin(t1+t2) + L3*sin(t1+t2+t3)
-
-% In DH method: add T3 matrix and multiply
-T_total = T1 * T2 * T3
-
-% In IK: use numerical optimization since 3DOF is still tractable
+cd simulink
+setup_simulink
 ```
 
-**Extensibility:**
-- 6DOF industrial robots: use DH matrices (one per joint)
-- Mobile manipulation: compose base pose + arm kinematics
-- Redundant arms (7+ DOF): use numerical IK with joint limits
+Build both models:
+```matlab
+build_simulink_model
+```
+
+**arm_static.slx** fixed target (x=1.0, y=0.8), runtime 0.1 s  
+Expected display values: x=1.00000, y=0.80000, θ1=0.00000 rad, θ2=1.57080 rad
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ff486571-1422-4425-b1ad-9f0ae5eeacef" width="80%" />
+</p>
+
+**arm_trajectory.slx** sine-wave x target (0.6 to 1.4), y=0.6 constant, runtime 20 s  
+XY Graph traces a horizontal line; Scope shows θ1 and θ2 oscillating.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/afe611cc-29be-4585-961a-bc967453b0c9" width="45%" />
+  <img src="https://github.com/user-attachments/assets/5141fe42-b68e-4209-b7b3-fad90af60dcc" width="45%" />
+</p>
+
+Verify results after running:
+```matlab
+cd ../tests
+verify_simulink
+```
+
+---
+
+## Quick Reference
+
+```matlab
+% FK
+[x, y] = custom_FK_2DOF(theta1, theta2, L1, L2)
+
+% IK closed-form
+[t1, t2, ok] = custom_IK_2DOF(x, y, L1, L2)          % elbow-up
+[t1, t2, ok] = custom_IK_2DOF(x, y, L1, L2, 0)       % elbow-down
+
+% IK Newton-Raphson
+[t1, t2, ok, iters, hist] = custom_IK_newton(x, y, L1, L2)
+
+% Jacobian
+[J, w, det_J, is_singular] = custom_jacobian(t1, t2, L1, L2)
+
+% Velocity IK
+theta_dot = custom_IK_velocity(t1, t2, x_dot, L1, L2)        % auto
+theta_dot = custom_IK_velocity(t1, t2, x_dot, L1, L2, 'dls') % explicit
+
+% Pick-and-place
+traj = custom_pick_place([0.8 0.2], [-0.7 0.3], L1, L2)
+traj = custom_pick_place(pick, place, L1, L2, opts)   % with options
+% opts fields: hover_height, home, n_steps, elbow_up
+
+% Inspect trajectory
+traj.valid          % 1 if all IK solved
+traj.n_failed       % count of fallback waypoints
+traj.w              % manipulability at each waypoint
+traj.phase_labels   % cell array of phase names
+```

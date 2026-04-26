@@ -5,9 +5,8 @@ addpath(fullfile(root_dir, 'kinematics'));
 addpath(fullfile(root_dir, 'visualization'));
 addpath(test_dir);
 
-fprintf('==========================================================\n');
-fprintf('  plot_jacobian_ellipse - Math Verification (headless)\n');
-fprintf('==========================================================\n\n');
+fprintf('[==========] test_ellipse_math.m\n');
+fprintf('[----------] plot_jacobian_ellipse - math verification (headless)\n\n');
 
 L1=1.0; L2=0.8; pass=0; fail=0;
 
@@ -130,11 +129,11 @@ end
 fprintf('  %s  Ratio monotonically increases toward singularity\n',rs(ok));
 if ok, pass=pass+1; else, fail=fail+1; end
 
-fprintf('\n==========================================================\n');
-fprintf('  RESULTS: PASS=%d  FAIL=%d  TOTAL=%d\n',pass,fail,pass+fail);
+fprintf('\n[==========] Results\n');
+fprintf('PASS=%d  FAIL=%d  TOTAL=%d\n',pass,fail,pass+fail);
 if fail==0
-    fprintf('  STATUS:  ALL PASS - ellipse math verified\n');
+    fprintf('STATUS: ALL PASS - ellipse math verified\n');
 else
-    fprintf('  STATUS:  %d FAILURE(S)\n',fail);
+    fprintf('STATUS: %d FAILURE(S)\n',fail);
 end
-fprintf('==========================================================\n');
+fprintf('[==========]\n');

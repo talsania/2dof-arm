@@ -100,11 +100,11 @@ catch ME
     fprintf('  --> Manually paste fk_block_simulink.m into FK_Block\n');
 end
 
-% ── C: save so ports refresh ───────────────────────────────
+% C: save so ports refresh
 save_system(mdl1);
 pause(1);   % give Simulink a moment to register the new ports
 
-% ── D: wire signals ─────────────────────────────────────────
+% D: wire signals
 try
     add_line(mdl1, 'x_target/1', 'IK_Block/1', 'autorouting', 'on');
     add_line(mdl1, 'y_target/1', 'IK_Block/2', 'autorouting', 'on');
@@ -118,17 +118,17 @@ try
     fprintf('  Signals wired\n');
 catch ME
     fprintf('  WARNING: auto-wiring failed: %s\n', ME.message);
-    fprintf('  --> Connect blocks manually in the Simulink canvas\n');
+    fprintf('  [WARN] Connect blocks manually in the Simulink canvas\n');
 end
 
 % E: Configure solver
 set_param(mdl1, 'StopTime', '0.1', 'Solver', 'ode45', 'MaxStep', '0.01');
 
 save_system(mdl1);
-fprintf('  Saved: %s.slx\n', mdl1);
-fprintf('  --> Press Ctrl+T in this Simulink window to run\n');
-fprintf('  --> Display_x should show 1.00000\n');
-fprintf('  --> Display_y should show 0.80000\n');
+fprintf('  [OK] Saved: %s.slx\n', mdl1);
+fprintf('  [INFO] Press Ctrl+T in this Simulink window to run\n');
+fprintf('  [INFO] Display_x should show 1.00000\n');
+fprintf('  [INFO] Display_y should show 0.80000\n');
 
 % MODEL 2: Trajectory test
 % Sine wave target → IK → Memory → FK → XY Graph + Scope
@@ -194,14 +194,14 @@ try
     end
 catch ME
     fprintf('  WARNING: auto code inject failed (%s)\n', ME.message);
-    fprintf('  --> Manually paste code into IK_Block and FK_Block\n');
+    fprintf('  [WARN] Manually paste code into IK_Block and FK_Block\n');
 end
 
-% ── C: save so ports refresh ───────────────────────────────
+% C: save so ports refresh
 save_system(mdl2);
 pause(1);
 
-% ── D: wire signals ─────────────────────────────────────────
+% D: wire signals
 try
     add_line(mdl2, 'x_wave/1',     'IK_Block/1',     'autorouting', 'on');
     add_line(mdl2, 'y_const/1',    'IK_Block/2',     'autorouting', 'on');
@@ -225,22 +225,21 @@ set_param(mdl2, 'StopTime', '20', 'Solver', 'ode45', ...
     'MaxStep', '0.05');
 
 save_system(mdl2);
-fprintf('  Saved: %s.slx\n', mdl2);
-fprintf('  --> Press Ctrl+T in this Simulink window to run\n');
-fprintf('  --> XY Graph shows arm path (horizontal line)\n');
-fprintf('  --> Scope shows joint angles over time\n');
+fprintf('  [OK] Saved: %s.slx\n', mdl2);
+fprintf('  [INFO] Press Ctrl+T in this Simulink window to run\n');
+fprintf('  [INFO] XY Graph shows arm path (horizontal line)\n');
+fprintf('  [INFO] Scope shows joint angles over time\n');
 
 % Return to original folder
 cd(original_folder);
 
 % Final message
-fprintf('\n================================================\n');
-fprintf(' BOTH MODELS BUILT\n\n');
-fprintf(' 1. simulink/arm_static.slx     Press Ctrl+T\n');
-fprintf('    Look at Display_x = 1.00000\n');
-fprintf('    Look at Display_y = 0.80000\n\n');
-fprintf(' 2. simulink/arm_trajectory.slx Press Ctrl+T\n');
-fprintf('    XY Graph traces a path\n');
-fprintf('    Scope shows two angle curves\n\n');
-fprintf(' 3. Then run tests/verify_simulink.m\n');
-fprintf('================================================\n');
+fprintf('\n[==========] Both models built\n\n');
+fprintf('1. simulink/arm_static.slx     Press Ctrl+T\n');
+fprintf('   Display_x = 1.00000\n');
+fprintf('   Display_y = 0.80000\n\n');
+fprintf('2. simulink/arm_trajectory.slx Press Ctrl+T\n');
+fprintf('   XY Graph traces a path\n');
+fprintf('   Scope shows two angle curves\n\n');
+fprintf('3. Then run tests/verify_simulink.m\n');
+fprintf('[==========]\n');

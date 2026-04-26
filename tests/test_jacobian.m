@@ -9,9 +9,8 @@ addpath(fullfile(root_dir, 'visualization'));
 addpath(test_dir);
 
 clc;
-fprintf('==========================================================\n');
-fprintf('  test_jacobian.m\n');
-fprintf('==========================================================\n\n');
+fprintf('[==========] test_jacobian.m\n');
+fprintf('[----------] Jacobian and manipulability tests\n\n');
 
 L1  = 1.0;
 L2  = 0.8;
@@ -20,18 +19,17 @@ pass = 0;
 fail = 0;
 
 % Group A: Jacobian structure and math
-fprintf('GROUP A - Jacobian structure & math\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group A: Jacobian structure & math\n');
 
 %% A1: Size and type
-fprintf('A1: J is 2x2 double\n');
+fprintf('[----------] A1: J is 2x2 double\n');
 [J] = custom_jacobian(pi/4, pi/3, L1, L2);
 ok  = isequal(size(J), [2 2]) && isa(J, 'double');
 fprintf('    size=%dx%d  class=%s  => %s\n', size(J,1), size(J,2), class(J), rs(ok));
 if ok, pass=pass+1; else, fail=fail+1; end
 
 %% A2: Exact formula at 6 benchmark configs
-fprintf('A2: J entries match analytical formula at 6 benchmark configs\n');
+fprintf('[----------] A2: J entries match analytical formula at 6 benchmark configs\n');
 cfgs = [0 0; pi/4 pi/2; pi/2 -pi/4; pi pi/3; -pi/3 2*pi/3; pi/6 -pi/6];
 a2ok = true;
 for i = 1:size(cfgs,1)
@@ -112,8 +110,7 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group B: Singularity and manipulability
-fprintf('GROUP B - Singularity & manipulability\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group B: singularity and manipulability\n');
 
 %% B1: Singular when t2=0 (fully extended)
 fprintf('B1: Singular at t2=0 (arm fully extended)\n');
@@ -166,8 +163,7 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group C: Velocity IK exact inverse
-fprintf('GROUP C - Velocity IK: exact inverse\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group C: velocity IK exact inverse\n');
 
 cfgs2 = [pi/4 pi/2; pi/6 pi/3; -pi/3 2*pi/3; pi/3 pi/4; pi/5 3*pi/5];
 
@@ -215,8 +211,7 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group D: Velocity IK transpose
-fprintf('GROUP D - Velocity IK: transpose\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group D: velocity IK transpose\n');
 
 %% D1: Never NaN/Inf - even at all singularities
 fprintf('D1: transpose never produces NaN/Inf (10 singular + 10 random configs)\n');
@@ -278,8 +273,7 @@ if d3ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group E: Velocity IK damped least squares
-fprintf('GROUP E - Velocity IK: DLS\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group E: velocity IK DLS\n');
 
 %% E1: DLS(lambda=0) == exact for non-singular configs
 fprintf('E1: DLS(lambda=0) == exact for 5 configs (tol=1e-8)\n');
@@ -336,8 +330,7 @@ if e3ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group F: Auto mode
-fprintf('GROUP F - Velocity IK: AUTO mode selection\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group F: velocity IK auto mode selection\n');
 
 %% F1: Method selection by manipulability band
 fprintf('F1: Correct method selected per manipulability band\n');
@@ -379,8 +372,7 @@ if f2ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group G: Integration and dynamics
-fprintf('GROUP G - Integration & dynamics\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group G: integration and dynamics\n');
 
 %% G1: Integrate velocity IK - EE tracks desired velocity accurately
 fprintf('G1: Euler integration tracks desired EE velocity (x-direction)\n');
@@ -429,14 +421,14 @@ fprintf('    target_r=%.3f  max_drift=%.4f (tol=0.05)  => %s\n', ...
 if ok, pass=pass+1; else, fail=fail+1; end
 
 % Summary
-fprintf('\n==========================================================\n');
-fprintf('  RESULTS: PASS=%-2d  FAIL=%-2d  TOTAL=%d\n', pass, fail, pass+fail);
+fprintf('\n[==========] Results\n');
+fprintf('PASS=%-2d  FAIL=%-2d  TOTAL=%d\n', pass, fail, pass+fail);
 if fail == 0
-    fprintf('  STATUS:  ALL PASS  \n');
+    fprintf('STATUS: ALL PASS\n');
 else
-    fprintf('  STATUS:  %d FAILURE(S) found\n', fail);
-    fprintf('  Check FAIL lines above for details.\n');
+    fprintf('STATUS: %d FAILURE(S) found\n', fail);
+    fprintf('Check FAIL lines above for details.\n');
 end
-fprintf('==========================================================\n');
+fprintf('[==========]\n');
 
 % rs helper is in tests/rs.m

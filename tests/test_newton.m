@@ -8,9 +8,8 @@ addpath(fullfile(root_dir, 'visualization'));
 addpath(fullfile(root_dir, 'tests'));
 
 clc;
-fprintf('==========================================================\n');
-fprintf('  test_newton.m - Newton-Raphson IK\n');
-fprintf('==========================================================\n\n');
+fprintf('[==========] test_newton.m\n');
+fprintf('[----------] Newton-Raphson IK\n\n');
 
 L1 = 1.0; L2 = 0.8; pass = 0; fail = 0; TOL = 1e-9;
 
@@ -27,11 +26,10 @@ targets = [
 ];
 
 % Group A: basic convergence with closedform seed
-fprintf('GROUP A - Convergence with closedform seed\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group A: convergence with closedform seed\n');
 
 %% A1: Converges and valid=1 for all standard targets
-fprintf('A1: valid=1 for all 8 standard targets\n');
+fprintf('[----------] A1: valid=1 for all 8 standard targets\n');
 a1ok = true;
 for i = 1:size(targets,1)
     [t1,t2,ok] = custom_IK_newton(targets(i,1), targets(i,2), L1, L2);
@@ -44,7 +42,7 @@ fprintf('  %s  8/8 targets converged\n', rs(a1ok));
 if a1ok, pass=pass+1; else, fail=fail+1; end
 
 %% A2: FK(solution) matches target (accuracy)
-fprintf('\nA2: ||FK(t1,t2) - target|| < 1e-9 for all 8 targets\n');
+fprintf('\n[----------] A2: ||FK(t1,t2) - target|| < 1e-9 for all 8 targets\n');
 a2ok = true;
 for i = 1:size(targets,1)
     xt=targets(i,1); yt=targets(i,2);
@@ -62,7 +60,7 @@ fprintf('  %s  All within 1e-9\n', rs(a2ok));
 if a2ok, pass=pass+1; else, fail=fail+1; end
 
 %% A3: Closedform seed converges fast (<=3 iterations)
-fprintf('\nA3: Closedform seed converges in <=3 iterations\n');
+fprintf('\n[----------] A3: closedform seed converges in <=3 iterations\n');
 a3ok = true;
 opts.init = 'closedform';
 for i = 1:size(targets,1)
@@ -98,8 +96,7 @@ if a4ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group B: cold start seeds
-fprintf('GROUP B - Cold start seeds (zero, random)\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group B: cold start seeds (zero, random)\n');
 
 %% B1: Zero seed converges for easy targets
 fprintf('B1: Zero seed converges for targets in Q1 (near workspace center)\n');
@@ -160,8 +157,7 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group C: accuracy vs closed-form IK
-fprintf('GROUP C - NR accuracy vs custom_IK_2DOF (closed-form)\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group C: NR accuracy vs custom_IK_2DOF (closed-form)\n');
 
 %% C1: FK(NR solution) == FK(closed-form solution) to 1e-9
 fprintf('C1: FK(NR) == FK(closedform) to 1e-9 for 8 targets\n');
@@ -207,8 +203,7 @@ if c2ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group D: err_history
-fprintf('GROUP D - err_history output\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group D: err_history output\n');
 
 %% D1: err_history(1) is error at initial guess
 fprintf('D1: err_history(1) == ||FK(seed) - target||\n');
@@ -252,8 +247,7 @@ if d3ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group E: edge cases
-fprintf('GROUP E - Edge cases\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group E: edge cases\n');
 
 %% E1: Outside workspace returns valid=0, no error thrown
 fprintf('E1: Out-of-workspace target returns valid=0 cleanly\n');
@@ -320,8 +314,7 @@ if ok, pass=pass+1; else, fail=fail+1; end
 fprintf('\n');
 
 % Group F: options struct
-fprintf('GROUP F - Options struct\n');
-fprintf('----------------------------------------------------------\n');
+fprintf('[----------] Group F: options struct\n');
 
 %% F1: All 5 outputs accessible
 fprintf('F1: All 5 outputs [t1,t2,valid,iters,hist] accessible\n');
@@ -365,11 +358,11 @@ fprintf('  %s\n', rs(f3ok));
 if f3ok, pass=pass+1; else, fail=fail+1; end
 
 % Summary
-fprintf('\n==========================================================\n');
-fprintf('  RESULTS: PASS=%-2d  FAIL=%-2d  TOTAL=%d\n', pass, fail, pass+fail);
+fprintf('\n[==========] Results\n');
+fprintf('PASS=%-2d  FAIL=%-2d  TOTAL=%d\n', pass, fail, pass+fail);
 if fail == 0
-    fprintf('  STATUS:  ALL PASS - 3 Newton-Raphson verified\n');
+    fprintf('STATUS: ALL PASS - 3 Newton-Raphson verified\n');
 else
-    fprintf('  STATUS:  %d FAILURE(S) - check FAIL lines above\n', fail);
+    fprintf('STATUS: %d FAILURE(S) - check FAIL lines above\n', fail);
 end
-fprintf('==========================================================\n');
+fprintf('[==========]\n');
