@@ -10,11 +10,11 @@ function animate_pick_place(traj, L1, L2, options)
 %     L1, L2   link lengths (m)
 %     options  struct:
 %       .pause_s      pause between frames (default: 0.03 s)
-%       .show_ellipse true/false — draw manipulability ellipse (default: true)
-%       .show_path    true/false — draw EE path trace (default: true)
-%       .show_w_bar   true/false — draw w bar at bottom (default: true)
+%       .show_ellipse true/false - draw manipulability ellipse (default: true)
+%       .show_path    true/false - draw EE path trace (default: true)
+%       .show_w_bar   true/false - draw w bar at bottom (default: true)
 %       .ellipse_scale scale factor for ellipse (default: 0.18)
-%       .show_gripper  true/false — draw gripper open/close indicator (default: true)
+%       .show_gripper  true/false - draw gripper open/close indicator (default: true)
 %
 %   WHAT YOU SEE:
 %     Main axes:
@@ -23,7 +23,7 @@ function animate_pick_place(traj, L1, L2, options)
 %       Pick target (red X), Place target (blue X), Home (black square)
 %       Velocity ellipse at EE (shrinks near singularity)
 %       Phase label top-left
-%     Bottom bar:  w(t) / w_max — green=high dexterity, red=low
+%     Bottom bar:  w(t) / w_max - green=high dexterity, red=low
 %     Gripper indicator: OPEN (yellow) during transit, CLOSED (red) at pick/place
 
     if nargin < 4, options = struct(); end
@@ -38,7 +38,7 @@ function animate_pick_place(traj, L1, L2, options)
     w_max = L1 * L2;   % theoretical maximum manipulability
     N     = traj.total_pts;
 
-    % Phase colour map — one colour per phase
+    % Phase colour map - one colour per phase
     phase_colors = [
         0.20 0.60 1.00;   % 1 home→above_pick   blue
         0.10 0.80 0.30;   % 2 above_pick→pick    green
@@ -201,7 +201,7 @@ function animate_pick_place(traj, L1, L2, options)
     end
 
     % Final frame hold
-    set(h_phase,'String','COMPLETE — arm at home','Color',[0.1 0.5 0.1]);
+    set(h_phase,'String','COMPLETE - arm at home','Color',[0.1 0.5 0.1]);
     drawnow;
 end
 

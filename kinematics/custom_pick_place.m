@@ -69,9 +69,9 @@ function traj = custom_pick_place(pick, place, L1, L2, options)
         % Alpha grid
         alpha_all = linspace(0, 1, n + 1);
         if seg == 1
-            alphas = alpha_all(1:n);      % [0 .. (n-1)/n]  — endpoint belongs to seg 2
+            alphas = alpha_all(1:n);      % [0 .. (n-1)/n]  - endpoint belongs to seg 2
         else
-            alphas = alpha_all(2:n+1);    % [1/n .. 1]      — includes exact endpoint
+            alphas = alpha_all(2:n+1);    % [1/n .. 1]      - includes exact endpoint
         end
 
         for k = 1:length(alphas)

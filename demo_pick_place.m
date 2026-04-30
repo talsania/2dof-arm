@@ -39,7 +39,7 @@ phase_colors = [
     0.40 0.40 0.90;   % 7  above_place → home
 ];
 
-figure('Name','Pick & Place — Trajectory Overview', ...
+figure('Name','Pick & Place - Trajectory Overview', ...
        'Color','white','Position',[50 50 1000 620]);
 
 % Cartesian path by phase
@@ -84,7 +84,7 @@ lim = (L1+L2)*1.1;
 xlim([-lim lim]); ylim([-lim lim]);
 axis equal; grid on;
 xlabel('X (m)'); ylabel('Y (m)');
-title('Pick & Place Cartesian Path — 7 Phases (numbered)','FontSize',11,'FontWeight','bold');
+title('Pick & Place Cartesian Path - 7 Phases (numbered)','FontSize',11,'FontWeight','bold');
 
 % Manipulability strip
 ax2 = subplot(3,1,3);
@@ -109,9 +109,9 @@ xlabel('Waypoint index'); ylabel('w = |det(J)|');
 title('Manipulability w along trajectory','FontSize',10);
 grid on;
 
-sgtitle('Pick & Place — Full Trajectory Overview','FontSize',13,'FontWeight','bold');
+sgtitle('Pick & Place - Full Trajectory Overview','FontSize',13,'FontWeight','bold');
 
-figure('Name','Pick & Place — Phase Snapshots', ...
+figure('Name','Pick & Place - Phase Snapshots', ...
        'Color','white','Position',[100 50 1400 380]);
 
 short_labels = {'Home→AbovePick','AbovePick→Pick','Pick→AbovePick', ...
