@@ -1,7 +1,5 @@
 %% demo
 % Jacobian manipulability ellipse demo.
-
-% Paths
 here     = fileparts(mfilename('fullpath'));
 root_dir = here;
 addpath(fullfile(root_dir, 'kinematics'));     % custom_jacobian, custom_FK_2DOF

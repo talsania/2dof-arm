@@ -6,9 +6,11 @@
 %    3. Two Simulink windows open automatically
 %    4. In EACH window press Ctrl+T to run the simulation
 %    5. Then run tests/verify_simulink.m to check results
-
-% Ensure we're in the simulink folder and save models here
 simulink_folder = fileparts(mfilename('fullpath'));
+project_root = fileparts(simulink_folder);
+addpath(fullfile(project_root, 'kinematics'));
+addpath(fullfile(project_root, 'visualization'));
+addpath(fullfile(project_root, 'tests'));
 original_folder = pwd;
 cd(simulink_folder);
 

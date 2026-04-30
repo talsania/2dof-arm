@@ -1,16 +1,17 @@
 %% Demo pick and place
-%
-%  Run from the project root or paste the block into demo.m.
-%
 %  Figures show the trajectory, phase snapshots, and animation.
+here     = fileparts(mfilename('fullpath'));
+root_dir = here;
+addpath(fullfile(root_dir, 'kinematics'));
+addpath(fullfile(root_dir, 'visualization'));
 
 % Parameters
 pick_pt  = [0.8,  0.2];     % object to pick  (red X)
 place_pt = [-0.7, 0.3];     % drop location   (blue X)
 
-opts_pp.hover_height = 0.30;   % rise 30 cm above pick/place before moving
+opts_pp.hover_height = 0.30;
 opts_pp.home         = [0.6, 0.0];
-opts_pp.n_steps      = 40;     % waypoints per segment (7 segs → 280 total)
+opts_pp.n_steps      = 40;  % 7 segs → 280 total
 opts_pp.elbow_up     = 1;
 
 fprintf('\nPick & Place Demo\n');
