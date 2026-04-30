@@ -145,7 +145,7 @@ Produces three figures and a live animation.
 - Manipulability bar at bottom
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/653242f5-d0f7-4a85-b32a-ef7bd1d6b7fb" width="69%" />
+  <img src="https://github.com/user-attachments/assets/981e9073-252c-4613-8137-52acca808c0d" width="69%" />
 </p>
 
 Typical output:
